@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+body {
+  padding: 0.42666667rem 0.21333333rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+h1 {
+  font-size: 0.42666667rem;
+  text-align: center;
+}
+p {
+  font-size: 0.17066667rem;
+  text-align: right;
+}
+select {
+  width: 30%;
+  min-height: 0.42666667rem;
+}
+input {
+  width: 30%;
+  min-height: 0.42666667rem;
+}
+table {
+  text-align: center;
+  font-size: 0.21333333rem;
+  border: solid 1px #cccccc;
+}
+table tr {
+  line-height: 1.5;
+}

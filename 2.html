@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <link rel="stylesheet" href="./css/2.css">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <h1 id="title">2018年灾险情统计表</h1>
+    <select id="particularYear" data-edit-select="1">
+    </select>
+    <select name="" id="quarter">
+        <option data-id="1" value="第一季度">第一季度</option>
+        <option data-id="2" value="第二季度">第二季度</option>
+        <option data-id="3" value="第三季度">第三季度</option>
+        <option data-id="4" value="第四季度">第四季度</option>
+    </select>
+    <input id="search" type="button" value="查询">
+    <p>截至3月31日</p>
+    <table border="1" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <td rowspan="2">序号</td>
+                <td rowspan="2">行政区</td>
+                <td rowspan="2">灾险情数量</td>
+                <td colspan="4">隐患等级</td>
+            </tr>
+            <tr>
+                <td>隐患Ⅰ级</td>
+                <td>隐患Ⅱ级</td>
+                <td>隐患Ⅲ级</td>
+                <td>隐患Ⅳ级</td>
+            </tr>
+        </thead>
+        <tbody id="tbodyHtml">
+            <tr>
+                <td>&nbsp;</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+
+    </table>
+    <script>
+        //rem适配
+        (function () {
+            var width = document.documentElement.clientWidth;
+            var style = document.createElement("style")
+            style.innerHTML = "html{font-size: " + width / 16 + "px !important;}"
+            document.head.appendChild(style)
+        })();
+        $(function () {
+            var localhost = "http://192.168.1.240:8098";
+            var particularYear = "", quarter_dataId = "", quarter = "";//年份数字    季度数字   第X季度
+            var StatisticalTable = {
+                init: function () {
+                    var year = (new Date()).getFullYear()
+                    var particularYearHtml = "";
+                    $("#title").html(year + "年" + quarter + "灾险情统计表")
+                    StatisticalTable.queryData(particularYear, quarter_dataId)
+                    for (let i = year; i >= year - 10; i--) {
+                        particularYearHtml += "<option value=" + i + ">" + i + "年</option>"
+                    }
+                    $("#particularYear").html(particularYearHtml)
+                    StatisticalTable.listen()
+                },
+                listen: function () {
+                    $("#search").on("click", function () {
+                        particularYear = $("#particularYear option:selected").val();
+                        quarter_dataId = $("#quarter option:selected").attr("data-id");
+                        quarter = $("#quarter option:selected").val();
+                        StatisticalTable.queryData(particularYear, quarter_dataId)
+                        $("#title").html(particularYear + "年" + quarter + "灾险情统计表")
+                    })
+                },
+                queryData: function (particularYear, quarter_dataId) {
+                    console.log(particularYear, quarter)
+                    $.ajax({
+                        url: localhost + "/dfbinterface/mobile/gisshow/GetGisCountData3",
+                        type: "POST",
+                        dataType: "jsonp",
+                        jsonp: "callback",
+                        data: {
+                            year: particularYear,
+                            quarter: quarter_dataId
+                        },
+                        success: function (data) {
+                            if (data.success === "0") {
+                                StatisticalTable.queryDate(data.result)
+                            }
+                        },
+                        error: function (err) {
+                        }
+                    });
+                },
+                queryDate: function (data) {
+                    var tbodyHtml = "",
+                        warnlevelSum = 0,//灾险情总数
+                        warnlevel1Sum = 0,//隐患Ⅰ级总数
+                        warnlevel2Sum = 0,//隐患Ⅱ级总数
+                        warnlevel3Sum = 0,//隐患Ⅲ级总数
+                        warnlevel4Sum = 0;//隐患Ⅳ级总数
+
+                    for (let i = 0; i < data.length; i++) {
+                        warnlevelSum += (data[i].warnlevel1 + data[i].warnlevel2 + data[i].warnlevel3 + data[i].warnlevel4);
+                        warnlevel1Sum += data[i].warnlevel1;
+                        warnlevel2Sum += data[i].warnlevel2;
+                        warnlevel3Sum += data[i].warnlevel3;
+                        warnlevel4Sum += data[i].warnlevel4;
+                        tbodyHtml +=
+                            "<tr>" +
+                            "<td>" + (i + 1) + "</td>" +
+                            "<td>" + data[i].areaname + "</td>" +
+                            "<td>" + (data[i].warnlevel1 + data[i].warnlevel2 + data[i].warnlevel3 + data[i].warnlevel4) + "</td>" +
+                            "<td>" + data[i].warnlevel1 + "</td>" +
+                            "<td>" + data[i].warnlevel2 + "</td>" +
+                            "<td>" + data[i].warnlevel3 + "</td>" +
+                            "<td>" + data[i].warnlevel4 + "</td>" +
+                            "</tr>"
+                    }
+                    tbodyHtml +=
+                        "<tr>" +
+                        "<td colspan='2'>总计</td>" +
+                        "<td>" + warnlevelSum + "</td>" +
+                        "<td>" + warnlevel1Sum + "</td>" +
+                        "<td>" + warnlevel2Sum + "</td>" +
+                        "<td>" + warnlevel3Sum + "</td>" +
+                        "<td>" + warnlevel4Sum + "</td>" +
+                        "</tr>"
+                    $("#tbodyHtml").html(tbodyHtml)
+                }
+            }
+            StatisticalTable.init()
+        })
+    </script>
+</body>
+
+</html>

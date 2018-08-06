@@ -1,0 +1,91 @@
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+}
+#map {
+  width: 100%;
+  height: 100%;
+}
+#panel {
+  position: absolute;
+  top: 30px;
+  left: 10px;
+  z-index: 999;
+  color: #fff;
+}
+#login {
+  position: absolute;
+  width: 300px;
+  height: 40px;
+  left: 50%;
+  top: 50%;
+  margin: -40px 0 0 -150px;
+}
+#login input[type="password"] {
+  width: 200px;
+  height: 30px;
+  padding: 3px;
+  line-height: 30px;
+  border: 1px solid #000;
+}
+#login input[type="submit"] {
+  width: 80px;
+  height: 38px;
+  display: inline-block;
+  line-height: 38px;
+}
+body {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+.wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+.BMap_cpyCtrl {
+  display: none;
+}
+.anchorBL {
+  display: none;
+}
+h1 {
+  position: absolute;
+  text-align: center;
+  user-select: none;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 36px;
+}
+.minTitle {
+  position: absolute;
+  text-align: center;
+  left: 50%;
+  top: 60px;
+  transform: translateX(-50%);
+  font-size: 25px;
+  font-weight: bold;
+}
+.right {
+  position: absolute;
+  right: 10px;
+  top: 30px;
+  text-align: right;
+}
+.layui-input-inline {
+  height: 35px;
+}
+.layui-input-inline input {
+  border: solid 1px #cccccc;
+  outline: none;
+  width: 180px;
+  margin: 2px;
+  height: 30px;
+}

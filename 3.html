@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <link rel="stylesheet" href="./css/3.css">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <h1 id="title">深圳市地面坍塌灾害治理情况统计(2018年)</h1>
+    <select id="particularYear" data-edit-select="1">
+    </select>
+    <select name="" id="quarter">
+        <option data-id="1" value="第一季度">第一季度</option>
+        <option data-id="2" value="第二季度">第二季度</option>
+        <option data-id="3" value="第三季度">第三季度</option>
+        <option data-id="4" value="第四季度">第四季度</option>
+    </select>
+    <input id="search" type="button" value="查询">
+    <table border="1" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <td>序号</td>
+                <td>坍塌原因分类</td>
+                <td>坍塌原因分类编号</td>
+                <td>发灾点数量（处）</td>
+                <td>占比（%）</td>
+            </tr>
+        </thead>
+        <tbody id="tbodyHtml">
+            <tr>
+                <td>&nbsp;</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+
+    </table>
+    <script>
+        (function () {
+            var width = document.documentElement.clientWidth;
+            var style = document.createElement("style")
+            style.innerHTML = "html{font-size: " + width / 16 + "px !important;}"
+            document.head.appendChild(style)
+        })();
+        $(function () {
+            var localhost = "http://192.168.1.240:8098";
+            queryData()
+            $("#search").on("click", function () {
+                var particularYear = $("#particularYear option:selected").val();
+                var quarter_dataId = $("#quarter option:selected").attr("data-id");
+                var quarter = $("#quarter option:selected").val();
+                queryData(particularYear, quarter_dataId)
+                console.log(particularYear)
+                $("#title").html("深圳市地面坍塌灾害治理情况统计(" + particularYear + "年" + quarter + ")")
+
+            })
+            var particularYearHtml = "";
+            var year = (new Date()).getFullYear()
+            for (let i = year; i >= year - 10; i--) {
+                particularYearHtml += "<option value=" + i + ">" + i + "年</option>"
+            }
+            $("#particularYear").html(particularYearHtml)
+            function queryData(particularYear, quarter) {
+                $.ajax({
+                    url: localhost + "/dfbinterface/mobile/gisshow/GetGisCountData4",
+                    type: "POST",
+                    dataType: "jsonp",
+                    jsonp: "callback",
+                    data: {
+                        year: particularYear,
+                        quarter: quarter
+                    },
+                    success: function (data) {
+
+                        if (data.success === "0") {
+                            var arr = []
+                            for (const key in data.result[0]) {
+                                if (data.result[0].hasOwnProperty(key)) {
+                                    arr.push(data.result[0][key])
+                                }
+                            }
+                            queryDate(arr)
+                        }
+                    },
+                    error: function (err) {
+                    }
+                });
+            }
+            function queryDate(data) {
+                console.log(data)
+                var tbodyHtml = "",
+                    datacountSum = 0,
+                    percentSum = 0;
+                for (let i = 0; i < data.length; i++) {
+                    datacountSum += data[i].datacount
+                    percentSum += parseFloat(data[i].percent)
+                    tbodyHtml +=
+                        "<tr>" +
+                        "<td>" + (i + 1) + "</td>" +
+                        "<td>" + data[i].dataname + "</td>" +
+                        "<td>" + data[i].datavalue + "</td>" +
+                        "<td>" + data[i].datacount + "</td>" +
+                        "<td>" + data[i].percent + "</td>" +
+                        "</tr>"
+                }
+                tbodyHtml +=
+                    "<tr>" +
+                    "<td colspan='2'>总计</td>" +
+                    "<td style='background:#cccccc'></td>" +
+                    "<td>" + datacountSum + "</td>" +
+                    "<td>" + percentSum + "%</td>" +
+                    "</tr>"
+                $("#tbodyHtml").html(tbodyHtml)
+            }
+        })
+    </script>
+</body>
+
+</html>
