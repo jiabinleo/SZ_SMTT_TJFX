@@ -22,6 +22,7 @@
         <option data-id="4" value="第四季度">第四季度</option>
     </select>
     <input id="search" type="button" value="查询">
+    <p id="timer">截至3月31日</p>
     <table border="1" cellspacing="0" width="100%">
         <thead>
             <tr>
@@ -51,19 +52,20 @@
             document.head.appendChild(style)
         })();
         $(function () {
-            var localhost = "http://192.168.1.240:8098";
+            var localhost = "http://14.116.184.77:8098";
             queryData()
             $("#search").on("click", function () {
                 var particularYear = $("#particularYear option:selected").val();
                 var quarter_dataId = $("#quarter option:selected").attr("data-id");
                 var quarter = $("#quarter option:selected").val();
                 queryData(particularYear, quarter_dataId)
-                console.log(particularYear)
                 $("#title").html("深圳市地面坍塌灾害治理情况统计(" + particularYear + "年" + quarter + ")")
 
             })
             var particularYearHtml = "";
             var year = (new Date()).getFullYear()
+            var years = new Date()
+            $("#timer").html("截止" + years.getFullYear() + "年" + (years.getMonth() + 1) + "月" + years.getDate() + "日")
             for (let i = year; i >= year - 10; i--) {
                 particularYearHtml += "<option value=" + i + ">" + i + "年</option>"
             }
@@ -114,7 +116,7 @@
                 tbodyHtml +=
                     "<tr>" +
                     "<td colspan='2'>总计</td>" +
-                    "<td style='background:#cccccc'></td>" +
+                    "<td></td>" +
                     "<td>" + datacountSum + "</td>" +
                     "<td>" + percentSum + "%</td>" +
                     "</tr>"

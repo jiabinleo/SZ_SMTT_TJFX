@@ -79,7 +79,6 @@
                             }
                             $("#minTitle").html("(本次共查询到符合条件的灾害点有" + data.result.length + "个)")
                             StatisticalTable.map(data.result)
-                            console.log(data.result.length)
                         }
                     },
                     error: function (err) {
@@ -102,13 +101,12 @@
                 };
             },
             map: function (data) {
-                console.log(data)
                 data = data ? data : []
-                var map = new BMap.Map("map", { enableMapClick: false });                        // 创建Map实例
-                map.centerAndZoom(new BMap.Point(114.074962, 22.656069), 12);     // 初始化地图,设置中心点坐标和地图级别
-                map.enableScrollWheelZoom();                  //启用滚轮放大缩小
-                if (document.createElement('canvas').getContext) {  // 判断当前浏览器是否支持绘制海量点
-                    var points1 = [];  // 添加海量点数据
+                var map = new BMap.Map("map", { enableMapClick: false });// 创建Map实例
+                map.centerAndZoom(new BMap.Point(114.074962, 22.656069), 12);// 初始化地图,设置中心点坐标和地图级别
+                map.enableScrollWheelZoom();//启用滚轮放大缩小
+                if (document.createElement('canvas').getContext) {// 判断当前浏览器是否支持绘制海量点
+                    var points1 = [];// 添加海量点数据
                     var points2 = []
                     var points3 = []
                     var points4 = []
@@ -125,24 +123,24 @@
                         }
                     }
                     var options1 = {
-                        size: 4,
+                        size: 5,
                         shape: 3,
-                        color: 'green'
+                        color: 'red'
                     }
                     var options2 = {
-                        size: 4,
-                        shape: 3,
-                        color: 'orange'
-                    }
-                    var options3 = {
-                        size: 4,
+                        size: 5,
                         shape: 3,
                         color: 'yellow'
                     }
-                    var options4 = {
-                        size: 4,
+                    var options3 = {
+                        size: 5,
                         shape: 3,
-                        color: 'red'
+                        color: 'orange'
+                    }
+                    var options4 = {
+                        size: 5,
+                        shape: 3,
+                        color: 'blue'
                     }
                     var pointCollection1 = new BMap.PointCollection(points1, options1);  // 初始化PointCollection
                     var pointCollection2 = new BMap.PointCollection(points2, options2);
@@ -151,10 +149,43 @@
                     var opts = {
                         width: 250,     // 信息窗口宽度
                         height: 130,     // 信息窗口高度
-                        title: "灾害点", // 信息窗口标题
+                        title: "", // 信息窗口标题
                         enableMessage: true//设置允许信息窗发送短息
                     };
 
+                    pointCollection1.addEventListener('click', function (e) {
+                        for (let i = 0; i < data.length; i++) {
+                            if (StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat == e.point.lat && StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng == e.point.lng) {
+                                var content = (data[i].addressname + "<br/><br/>" + data[i].remark)
+                                var p = e.target;
+                                var point = new BMap.Point(e.point.lng, e.point.lat);
+                                var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
+                                map.openInfoWindow(infoWindow, point); //开启信息窗口
+                            }
+                        }
+                    });
+                    pointCollection2.addEventListener('click', function (e) {
+                        for (let i = 0; i < data.length; i++) {
+                            if (StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat == e.point.lat && StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng == e.point.lng) {
+                                var content = (data[i].addressname + "<br/><br/>" + data[i].remark)
+                                var p = e.target;
+                                var point = new BMap.Point(e.point.lng, e.point.lat);
+                                var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
+                                map.openInfoWindow(infoWindow, point); //开启信息窗口
+                            }
+                        }
+                    });
+                    pointCollection3.addEventListener('click', function (e) {
+                        for (let i = 0; i < data.length; i++) {
+                            if (StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat == e.point.lat && StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng == e.point.lng) {
+                                var content = (data[i].addressname + "<br/><br/>" + data[i].remark)
+                                var p = e.target;
+                                var point = new BMap.Point(e.point.lng, e.point.lat);
+                                var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
+                                map.openInfoWindow(infoWindow, point); //开启信息窗口
+                            }
+                        }
+                    });
                     pointCollection4.addEventListener('click', function (e) {
                         for (let i = 0; i < data.length; i++) {
                             if (StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat == e.point.lat && StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng == e.point.lng) {
@@ -163,7 +194,6 @@
                                 var point = new BMap.Point(e.point.lng, e.point.lat);
                                 var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
                                 map.openInfoWindow(infoWindow, point); //开启信息窗口
-                                console.log("\\")
                             }
                         }
                     });
