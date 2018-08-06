@@ -7,11 +7,10 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
     <link rel="stylesheet" href="./css/4.css">
-    <title>Document</title>
+    <title>深圳市地面坍塌灾害治理情况统计</title>
 </head>
 
 <body>
-
     <h1 id="title">深圳市地面坍塌灾害治理情况统计(2018年)</h1>
     <select id="particularYear" data-edit-select="1">
     </select>
@@ -67,7 +66,7 @@
             var particularYearHtml = "";
             var year = (new Date()).getFullYear()
             var years = new Date()
-            $("#timer").html("截止"+years.getFullYear()+"年"+(years.getMonth()+1)+"月"+years.getDate()+"日")
+            $("#timer").html("截止" + years.getFullYear() + "年" + (years.getMonth() + 1) + "月" + years.getDate() + "日")
             for (let i = year; i >= year - 10; i--) {
                 particularYearHtml += "<option value=" + i + ">" + i + "年</option>"
             }
@@ -97,9 +96,9 @@
                     solvedSum = 0,
                     suspendSum = 0;
                 for (let i = 0; i < data.length; i++) {
-                    sosuSum++
-                    solvedSum++
-                    suspendSum++
+                    sosuSum += (data[i].solved + data[i].suspend)
+                    solvedSum += data[i].solved
+                    suspendSum += data[i].suspend
                     tbodyHtml +=
                         "<tr>" +
                         "<td>" + data[i].areaname + "</td>" +

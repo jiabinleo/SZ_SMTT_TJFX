@@ -29,184 +29,227 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-        var localhost = "http://14.116.184.77:8098";
-        var dateStart = "", dateEnd = "";
-        var StatisticalTable = {
-            init: function () {
-                StatisticalTable.listen()
-            },
-            listen: function () {
-                //laydate
-                laydate.render({
-                    elem: "#start", //指定元素
-                    type: "date"
-                });
-                laydate.render({
-                    elem: "#end",
-                    type: "date"
-                });
-                StatisticalTable.querydata()
-                $("#Search").on("click", function () {
-                    dateStart = $.trim($("#start").val())
-                    dateEnd = $.trim($("#end").val())
-                    if (dateStart && dateEnd) {
-                        StatisticalTable.querydata(dateStart, dateEnd)
-                    }
-
-                })
-            },
-            querydata: function (dateStart, dateEnd) {
-                $.ajax({
-                    // dataType: "jsonp",
-                    url: localhost + "/dfbinterface/mobile/gisshow/GetGisCountData8",
-                    type: "POST",
-                    jsonp: "callback",
-                    data: {
-                        dateStart: dateStart,
-                        dateEnd: dateEnd
-                    },
-                    success: function (data) {
-                        data = JSON.parse(data)
-                        if (data.success === "0") {
-                            var today = dateEnd
-                            if (dateEnd) {
-                                var today = today.split("-")
-                                var today = today[0] + "年" + today[1] + "月" + today[2] + "日"
-                                console.log(today)
-                            } else {
-                                today = "今日"
+    <script>
+        $(function () {
+            var localhost = "http://14.116.184.77:8098";
+            var dateStart = "",
+                dateEnd = "";
+            var StatisticalTable = {
+                init: function () {
+                    StatisticalTable.listen();
+                },
+                listen: function () {
+                    //laydate
+                    laydate.render({
+                        elem: "#start", //指定元素
+                        type: "date"
+                    });
+                    laydate.render({
+                        elem: "#end",
+                        type: "date"
+                    });
+                    StatisticalTable.querydata();
+                    $("#Search").on("click", function () {
+                        dateStart = $.trim($("#start").val());
+                        dateEnd = $.trim($("#end").val());
+                        if (dateStart && dateEnd) {
+                            StatisticalTable.querydata(dateStart, dateEnd);
+                        }
+                    });
+                },
+                querydata: function (dateStart, dateEnd) {
+                    $.ajax({
+                        // dataType: "jsonp",
+                        url: localhost + "/dfbinterface/mobile/gisshow/GetGisCountData8",
+                        type: "POST",
+                        jsonp: "callback",
+                        data: {
+                            dateStart: dateStart,
+                            dateEnd: dateEnd
+                        },
+                        success: function (data) {
+                            data = JSON.parse(data);
+                            if (data.success === "0") {
+                                var today = dateEnd;
+                                if (dateEnd) {
+                                    var today = today.split("-");
+                                    var today = today[0] + "年" + today[1] + "月" + today[2] + "日";
+                                } else {
+                                    today = "今日";
+                                }
+                                $("#minTitle").html(
+                                    "(本次共查询到符合条件的灾害点有" + data.result.length + "个)"
+                                );
+                                StatisticalTable.map(data.result);
                             }
-                            $("#minTitle").html("(本次共查询到符合条件的灾害点有" + data.result.length + "个)")
-                            StatisticalTable.map(data.result)
-                        }
-                    },
-                    error: function (err) {
-                        console.log(err)
-                    }
-                })
-                StatisticalTable.map()
-            },
-            //高德坐标转换为百度坐标
-            bd_encrypt: function (gg_lng, gg_lat) {
-                var X_PI = Math.PI * 3000.0 / 180.0;
-                var x = gg_lng, y = gg_lat;
-                var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * X_PI);
-                var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * X_PI);
-                var bd_lng = z * Math.cos(theta) + 0.0065;
-                var bd_lat = z * Math.sin(theta) + 0.006;
-                return {
-                    bd_lat: bd_lat,
-                    bd_lng: bd_lng
-                };
-            },
-            map: function (data) {
-                data = data ? data : []
-                var map = new BMap.Map("map", { enableMapClick: false });// 创建Map实例
-                map.centerAndZoom(new BMap.Point(114.074962, 22.656069), 12);// 初始化地图,设置中心点坐标和地图级别
-                map.enableScrollWheelZoom();//启用滚轮放大缩小
-                if (document.createElement('canvas').getContext) {// 判断当前浏览器是否支持绘制海量点
-                    var points1 = [];// 添加海量点数据
-                    var points2 = []
-                    var points3 = []
-                    var points4 = []
-                    for (var i = 0; i < data.length; i++) {
-                        if (data[i].warnlevel == 1) {
-                            points1.push(new BMap.Point(StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng, StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat));
-                        } else if (data[i].warnlevel == 2) {
-                            points2.push(new BMap.Point(StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng, StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat));
-                        } else if (data[i].warnlevel == 3) {
-                            points3.push(new BMap.Point(StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng, StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat));
-                        } else if (data[i].warnlevel == 4) {
-
-                            points4.push(new BMap.Point(StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng, StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat));
-                        }
-                    }
-                    var options1 = {
-                        size: 5,
-                        shape: 3,
-                        color: 'red'
-                    }
-                    var options2 = {
-                        size: 5,
-                        shape: 3,
-                        color: 'yellow'
-                    }
-                    var options3 = {
-                        size: 5,
-                        shape: 3,
-                        color: 'orange'
-                    }
-                    var options4 = {
-                        size: 5,
-                        shape: 3,
-                        color: 'blue'
-                    }
-                    var pointCollection1 = new BMap.PointCollection(points1, options1);  // 初始化PointCollection
-                    var pointCollection2 = new BMap.PointCollection(points2, options2);
-                    var pointCollection3 = new BMap.PointCollection(points3, options3);
-                    var pointCollection4 = new BMap.PointCollection(points4, options4);
-                    var opts = {
-                        width: 250,     // 信息窗口宽度
-                        height: 130,     // 信息窗口高度
-                        title: "", // 信息窗口标题
-                        enableMessage: true//设置允许信息窗发送短息
+                        },
+                        error: function (err) { }
+                    });
+                    StatisticalTable.map();
+                },
+                //高德坐标转换为百度坐标
+                bd_encrypt: function (gg_lng, gg_lat) {
+                    var X_PI = (Math.PI * 3000.0) / 180.0;
+                    var x = gg_lng,
+                        y = gg_lat;
+                    var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * X_PI);
+                    var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * X_PI);
+                    var bd_lng = z * Math.cos(theta) + 0.0065;
+                    var bd_lat = z * Math.sin(theta) + 0.006;
+                    return {
+                        bd_lat: bd_lat,
+                        bd_lng: bd_lng
                     };
+                },
+                map: function (data) {
+                    data = data ? data : [];
+                    var map = new BMap.Map("map", { enableMapClick: false }); // 创建Map实例
+                    map.centerAndZoom(new BMap.Point(114.074962, 22.656069), 12); // 初始化地图,设置中心点坐标和地图级别
+                    map.enableScrollWheelZoom(); //启用滚轮放大缩小
+                    if (document.createElement("canvas").getContext) {
+                        // 判断当前浏览器是否支持绘制海量点
+                        var points1 = []; // 添加海量点数据
+                        var points2 = [];
+                        var points3 = [];
+                        var points4 = [];
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].warnlevel == 1) {
+                                points1.push(
+                                    new BMap.Point(
+                                        StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng,
+                                        StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat
+                                    )
+                                );
+                            } else if (data[i].warnlevel == 2) {
+                                points2.push(
+                                    new BMap.Point(
+                                        StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng,
+                                        StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat
+                                    )
+                                );
+                            } else if (data[i].warnlevel == 3) {
+                                points3.push(
+                                    new BMap.Point(
+                                        StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng,
+                                        StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat
+                                    )
+                                );
+                            } else if (data[i].warnlevel == 4) {
+                                points4.push(
+                                    new BMap.Point(
+                                        StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng,
+                                        StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat
+                                    )
+                                );
+                            }
+                        }
+                        var options1 = {
+                            size: 5,
+                            shape: 3,
+                            color: "red"
+                        };
+                        var options2 = {
+                            size: 5,
+                            shape: 3,
+                            color: "yellow"
+                        };
+                        var options3 = {
+                            size: 5,
+                            shape: 3,
+                            color: "orange"
+                        };
+                        var options4 = {
+                            size: 5,
+                            shape: 3,
+                            color: "blue"
+                        };
+                        var pointCollection1 = new BMap.PointCollection(points1, options1); // 初始化PointCollection
+                        var pointCollection2 = new BMap.PointCollection(points2, options2);
+                        var pointCollection3 = new BMap.PointCollection(points3, options3);
+                        var pointCollection4 = new BMap.PointCollection(points4, options4);
+                        var opts = {
+                            width: 250, // 信息窗口宽度
+                            height: 130, // 信息窗口高度
+                            title: "", // 信息窗口标题
+                            enableMessage: true //设置允许信息窗发送短息
+                        };
 
-                    pointCollection1.addEventListener('click', function (e) {
-                        for (let i = 0; i < data.length; i++) {
-                            if (StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat == e.point.lat && StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng == e.point.lng) {
-                                var content = (data[i].addressname + "<br/><br/>" + data[i].remark)
-                                var p = e.target;
-                                var point = new BMap.Point(e.point.lng, e.point.lat);
-                                var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
-                                map.openInfoWindow(infoWindow, point); //开启信息窗口
+                        pointCollection1.addEventListener("click", function (e) {
+                            for (let i = 0; i < data.length; i++) {
+                                if (
+                                    StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat ==
+                                    e.point.lat &&
+                                    StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng ==
+                                    e.point.lng
+                                ) {
+                                    var content = data[i].addressname + "<br/><br/>" + data[i].remark;
+                                    var p = e.target;
+                                    var point = new BMap.Point(e.point.lng, e.point.lat);
+                                    var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
+                                    map.openInfoWindow(infoWindow, point); //开启信息窗口
+                                }
                             }
-                        }
-                    });
-                    pointCollection2.addEventListener('click', function (e) {
-                        for (let i = 0; i < data.length; i++) {
-                            if (StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat == e.point.lat && StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng == e.point.lng) {
-                                var content = (data[i].addressname + "<br/><br/>" + data[i].remark)
-                                var p = e.target;
-                                var point = new BMap.Point(e.point.lng, e.point.lat);
-                                var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
-                                map.openInfoWindow(infoWindow, point); //开启信息窗口
+                        });
+                        pointCollection2.addEventListener("click", function (e) {
+                            for (let i = 0; i < data.length; i++) {
+                                if (
+                                    StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat ==
+                                    e.point.lat &&
+                                    StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng ==
+                                    e.point.lng
+                                ) {
+                                    var content = data[i].addressname + "<br/><br/>" + data[i].remark;
+                                    var p = e.target;
+                                    var point = new BMap.Point(e.point.lng, e.point.lat);
+                                    var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
+                                    map.openInfoWindow(infoWindow, point); //开启信息窗口
+                                }
                             }
-                        }
-                    });
-                    pointCollection3.addEventListener('click', function (e) {
-                        for (let i = 0; i < data.length; i++) {
-                            if (StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat == e.point.lat && StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng == e.point.lng) {
-                                var content = (data[i].addressname + "<br/><br/>" + data[i].remark)
-                                var p = e.target;
-                                var point = new BMap.Point(e.point.lng, e.point.lat);
-                                var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
-                                map.openInfoWindow(infoWindow, point); //开启信息窗口
+                        });
+                        pointCollection3.addEventListener("click", function (e) {
+                            for (let i = 0; i < data.length; i++) {
+                                if (
+                                    StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat ==
+                                    e.point.lat &&
+                                    StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng ==
+                                    e.point.lng
+                                ) {
+                                    var content = data[i].addressname + "<br/><br/>" + data[i].remark;
+                                    var p = e.target;
+                                    var point = new BMap.Point(e.point.lng, e.point.lat);
+                                    var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
+                                    map.openInfoWindow(infoWindow, point); //开启信息窗口
+                                }
                             }
-                        }
-                    });
-                    pointCollection4.addEventListener('click', function (e) {
-                        for (let i = 0; i < data.length; i++) {
-                            if (StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat == e.point.lat && StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng == e.point.lng) {
-                                var content = (data[i].addressname + "<br/><br/>" + data[i].remark)
-                                var p = e.target;
-                                var point = new BMap.Point(e.point.lng, e.point.lat);
-                                var infoWindow = new BMap.InfoWindow(content, opts);  // 创建信息窗口对象 
-                                map.openInfoWindow(infoWindow, point); //开启信息窗口
+                        });
+                        pointCollection4.addEventListener("click", function (e) {
+                            for (let i = 0; i < data.length; i++) {
+                                if (
+                                    StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lat ==
+                                    e.point.lat &&
+                                    StatisticalTable.bd_encrypt(data[i].lon, data[i].lat).bd_lng ==
+                                    e.point.lng
+                                ) {
+                                    var content = data[i].addressname + "<br/><br/>" + data[i].remark;
+                                    var p = e.target;
+                                    var point = new BMap.Point(e.point.lng, e.point.lat);
+                                    var infoWindow = new BMap.InfoWindow(content, opts); // 创建信息窗口对象
+                                    map.openInfoWindow(infoWindow, point); //开启信息窗口
+                                }
                             }
-                        }
-                    });
-                    map.addOverlay(pointCollection1);  // 添加Overlay
-                    map.addOverlay(pointCollection2);
-                    map.addOverlay(pointCollection3);
-                    map.addOverlay(pointCollection4);
-                } else {
-                    alert('请在chrome、safari、IE8+以上浏览器查看');
+                        });
+                        map.addOverlay(pointCollection1); // 添加Overlay
+                        map.addOverlay(pointCollection2);
+                        map.addOverlay(pointCollection3);
+                        map.addOverlay(pointCollection4);
+                    } else {
+                        alert("请在chrome、safari、IE8+以上浏览器查看");
+                    }
                 }
-            }
-        }
-        StatisticalTable.init();
+            };
+            StatisticalTable.init();
+        });
+
     </script>
 </body>
 

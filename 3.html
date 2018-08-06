@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
     <link rel="stylesheet" href="./css/3.css">
-    <title>Document</title>
+    <title>深圳市地面坍塌灾害治理情况统计</title>
 </head>
 
 <body>
@@ -81,7 +81,7 @@
                         quarter: quarter
                     },
                     success: function (data) {
-
+                        console.log(data)
                         if (data.success === "0") {
                             var arr = []
                             for (const key in data.result[0]) {
@@ -99,11 +99,11 @@
             function queryDate(data) {
                 console.log(data)
                 var tbodyHtml = "",
-                    datacountSum = 0,
-                    percentSum = 0;
+                    datacountSum = 0;
+                // percentSum = 0;
                 for (let i = 0; i < data.length; i++) {
                     datacountSum += data[i].datacount
-                    percentSum += parseFloat(data[i].percent)
+                    // percentSum += parseFloat(data[i].percent)
                     tbodyHtml +=
                         "<tr>" +
                         "<td>" + (i + 1) + "</td>" +
@@ -118,7 +118,7 @@
                     "<td colspan='2'>总计</td>" +
                     "<td></td>" +
                     "<td>" + datacountSum + "</td>" +
-                    "<td>" + percentSum + "%</td>" +
+                    "<td>100%</td>" +
                     "</tr>"
                 $("#tbodyHtml").html(tbodyHtml)
             }
