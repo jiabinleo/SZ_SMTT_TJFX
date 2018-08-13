@@ -11,39 +11,46 @@
 </head>
 
 <body>
-
-    <h1 id="title">深圳市地面坍塌灾害治理情况统计(2018年)</h1>
-    <select id="particularYear" data-edit-select="1">
-    </select>
-    <select name="" id="quarter">
-        <option data-id="1" value="第一季度">第一季度</option>
-        <option data-id="2" value="第二季度">第二季度</option>
-        <option data-id="3" value="第三季度">第三季度</option>
-        <option data-id="4" value="第四季度">第四季度</option>
-    </select>
-    <input id="search" type="button" value="查询">
-    <p id="timer">截至3月31日</p>
-    <table border="1" cellspacing="0" width="100%">
-        <thead>
-            <tr>
-                <td>序号</td>
-                <td>坍塌原因分类</td>
-                <td>坍塌原因分类编号</td>
-                <td>发灾点数量（处）</td>
-                <td>占比（%）</td>
-            </tr>
-        </thead>
-        <tbody id="tbodyHtml">
-            <tr>
-                <td>&nbsp;</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        </tbody>
-
-    </table>
+    <header>
+        <h1></h1>
+        <h2 id="title">深圳市地面坍塌灾害治理情况统计(2018年)</h2>
+    </header>
+    <section>
+            <menu>
+                <h3>灾险情统计表</h3>
+                <select id="particularYear" data-edit-select="1">
+                </select>
+                <select name="" id="quarter">
+                    <option data-id="0" value="全年">全年</option>
+                    <option data-id="1" value="第一季度">第一季度</option>
+                    <option data-id="2" value="第二季度">第二季度</option>
+                    <option data-id="3" value="第三季度">第三季度</option>
+                    <option data-id="4" value="第四季度">第四季度</option>
+                </select>
+                <input id="search" class="search" type="button" value="查询">
+            </menu>
+            <table border="1" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                            <td>序号</td>
+                            <td>坍塌原因分类</td>
+                            <td>坍塌原因分类编号</td>
+                            <td>发灾点数量（处）</td>
+                            <td>占比（%）</td>
+                    </tr>
+                </thead>
+                <tbody id="tbodyHtml">
+                        <tr>
+                                <td>&nbsp;</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                </tbody>
+            </table>
+            <p id="timer">截至3月31日</p>
+        </section>
     <script>
         (function () {
             var width = document.documentElement.clientWidth;
@@ -97,7 +104,6 @@
                 });
             }
             function queryDate(data) {
-                console.log(data)
                 var tbodyHtml = "",
                     datacountSum = 0;
                 // percentSum = 0;
