@@ -59,7 +59,7 @@
         <p id="timer">截至3月31日</p>
     </section>
 
-    
+
 
     <script>
         //rem适配
@@ -79,7 +79,6 @@
                     var year = new Date().getFullYear();
                     var particularYearHtml = "";
                     var years = new Date();
-                    console.log(years);
                     $("#title").html(year + "年" + quarter + "灾险情统计表");
                     $("#timer").html(
                         "截止" +
@@ -107,7 +106,6 @@
                     });
                 },
                 queryData: function (particularYear, quarter_dataId) {
-                    console.log(particularYear, quarter);
                     $.ajax({
                         url: localhost + "/dfbinterface/mobile/gisshow/GetGisCountData3",
                         type: "POST",
