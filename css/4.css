@@ -95,18 +95,10 @@ section table thead tr:first-of-type td {
 section table thead tr:first-of-type td:first-of-type {
   border-top: solid 0.03333333rem #EEBF75;
 }
-section table thead tr:first-of-type td:first-of-type::after {
-  content: "area";
-  display: block;
-  font-size: 0.15rem;
-  color: #999999;
-  padding-top: 0.04166667rem;
-}
 section table thead tr:first-of-type td:nth-of-type(2) {
   border-top: solid 0.03333333rem #E47F7F;
 }
 section table thead tr:first-of-type td:nth-of-type(2)::after {
-  content: "Collapse control";
   display: block;
   font-size: 0.15rem;
   color: #999999;

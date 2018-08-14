@@ -6,60 +6,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="Mdate/Mdate.js"></script>
+    <script src="Mdate/iScroll.js"></script>
     <link rel="stylesheet" href="./css/2.css">
     <title>灾险情统计表</title>
 </head>
 
 <body>
-    <header>
-        <h1></h1>
-        <h2 id="title">2018年灾险情统计表</h2>
-    </header>
-    <section>
-        <menu>
-            <h3>灾险情统计表</h3>
-            <select id="particularYear" data-edit-select="1">
-            </select>
-            <select name="" id="quarter">
-                <option data-id="0" value="全年">全年</option>
-                <option data-id="1" value="第一季度">第一季度</option>
-                <option data-id="2" value="第二季度">第二季度</option>
-                <option data-id="3" value="第三季度">第三季度</option>
-                <option data-id="4" value="第四季度">第四季度</option>
-            </select>
-            <input id="search" class="search" type="button" value="查询">
-        </menu>
-        <table border="1" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <td rowspan="2">序号</td>
-                    <td rowspan="2">行政区</td>
-                    <td rowspan="2">灾险情数量</td>
-                    <td colspan="4" class="hidden-danger-grade">隐患等级</td>
-                </tr>
-                <tr>
-                    <td>隐患Ⅰ级</td>
-                    <td>隐患Ⅱ级</td>
-                    <td>隐患Ⅲ级</td>
-                    <td>隐患Ⅳ级</td>
-                </tr>
-            </thead>
-            <tbody id="tbodyHtml">
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-        <p id="timer">截至3月31日</p>
-    </section>
-
-
+    <div class="pc">
+        <header>
+            <h1></h1>
+            <h2 id="title">2018年灾险情统计表</h2>
+        </header>
+        <section>
+            <menu>
+                <h3>灾险情统计表</h3>
+                <select id="particularYear" data-edit-select="1">
+                </select>
+                <select name="" id="quarter">
+                    <option data-id="0" value="全年">全年</option>
+                    <option data-id="1" value="第一季度">第一季度</option>
+                    <option data-id="2" value="第二季度">第二季度</option>
+                    <option data-id="3" value="第三季度">第三季度</option>
+                    <option data-id="4" value="第四季度">第四季度</option>
+                </select>
+                <input id="search" class="search" type="button" value="查询">
+            </menu>
+            <table border="1" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <td rowspan="2">序号</td>
+                        <td rowspan="2">行政区</td>
+                        <td rowspan="2">灾险情数量</td>
+                        <td colspan="4" class="hidden-danger-grade">隐患等级</td>
+                    </tr>
+                    <tr>
+                        <td>隐患Ⅰ级</td>
+                        <td>隐患Ⅱ级</td>
+                        <td>隐患Ⅲ级</td>
+                        <td>隐患Ⅳ级</td>
+                    </tr>
+                </thead>
+                <tbody id="tbodyHtml">
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p id="timer">截至3月31日</p>
+        </section>
+    </div>
+    <div class="phone">
+        <header>
+            灾险情统计表
+            <i id=""></i>
+            <input type="text" id="dateSelectorOne" placeholder="选择日期">
+        </header>
+        <section>
+            <h2 id="titlePhone">灾险情统计表</h2>
+            <table border="1" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <td>行政区</td>
+                        <td>Ⅰ级</td>
+                        <td>Ⅱ级</td>
+                        <td>Ⅲ级</td>
+                        <td>Ⅳ级</td>
+                    </tr>
+                </thead>
+                <tbody id="phoneHtml">
+                </tbody>
+            </table>
+            <p id="sum">合计一共31次</p>
+            <p id="timerphone" class="timerphone">截至3月31日</p>
+        </section>
+        <footer>
+        </footer>
+    </div>
 
     <script>
         //rem适配
@@ -89,21 +118,51 @@
                         years.getDate() +
                         "日"
                     );
+                    $("#timerphone").html(
+                        "截止" +
+                        years.getFullYear() +
+                        "年" +
+                        (years.getMonth() + 1) +
+                        "月" +
+                        years.getDate() +
+                        "日"
+                    );
                     StatisticalTable.queryData(particularYear, quarter_dataId);
                     for (let i = year; i >= year - 10; i--) {
                         particularYearHtml += "<option value=" + i + ">" + i + "年</option>";
                     }
                     $("#particularYear").html(particularYearHtml);
                     StatisticalTable.listen();
+                    StatisticalTable.TimePlugIn()
                 },
                 listen: function () {
-                    $("#search").on("click", function () {
-                        particularYear = $("#particularYear option:selected").val();
-                        quarter_dataId = $("#quarter option:selected").attr("data-id");
-                        quarter = $("#quarter option:selected").val();
+                    // $("#dateSure").on("click", function () {
+                    $(document).on("click", "#dateSure", function () {
+                        particularYear = $("#dateSelectorOne").attr("data-year");
+                        quarter_dataId = $("#dateSelectorOne").attr("data-month");
                         StatisticalTable.queryData(particularYear, quarter_dataId);
-                        $("#title").html(particularYear + "年" + quarter + "灾险情统计表");
-                    });
+                        var quarter = ""
+                        switch (quarter_dataId) {
+                            case "1":
+                                quarter = "第一季度"
+                                break;
+                            case "2":
+                                quarter = "第二季度"
+                                break;
+                            case "3":
+                                quarter = "第三季度"
+                                break;
+                            case "4":
+                                quarter = "第四季度"
+                                break;
+
+                            default:
+                                break;
+                        }
+                        setTimeout(() => {
+                            $("#titlePhone").html(particularYear + "年" + quarter + "灾险情统计表");
+                        }, 0);
+                    })
                 },
                 queryData: function (particularYear, quarter_dataId) {
                     $.ajax({
@@ -125,6 +184,7 @@
                 },
                 queryDate: function (data) {
                     var tbodyHtml = "",
+                        phoneHtml = "",
                         warnlevelSum = 0, //灾险情总数
                         warnlevel1Sum = 0, //隐患Ⅰ级总数
                         warnlevel2Sum = 0, //隐患Ⅱ级总数
@@ -168,6 +228,25 @@
                             data[i].warnlevel4 +
                             "</td>" +
                             "</tr>";
+
+                        phoneHtml +=
+                            "<tr>" +
+                            "<td>" +
+                            data[i].areaname +
+                            "</td>" +
+                            "<td>" +
+                            data[i].warnlevel1 +
+                            "次</td>" +
+                            "<td>" +
+                            data[i].warnlevel2 +
+                            "次</td>" +
+                            "<td>" +
+                            data[i].warnlevel3 +
+                            "次</td>" +
+                            "<td>" +
+                            data[i].warnlevel4 +
+                            "次</td>" +
+                            "</tr>";
                     }
                     tbodyHtml +=
                         "<tr>" +
@@ -188,12 +267,44 @@
                         warnlevel4Sum +
                         "</td>" +
                         "</tr>";
+
+                    phoneHtml +=
+                        "<tr>" +
+                        "<td>合计</td>" +
+                        "<td>" +
+                        warnlevel1Sum +
+                        "次</td>" +
+                        "<td>" +
+                        warnlevel2Sum +
+                        "次</td>" +
+                        "<td>" +
+                        warnlevel3Sum +
+                        "次</td>" +
+                        "<td>" +
+                        warnlevel4Sum +
+                        "次</td>" +
+                        "</tr>";
+                    var sum = warnlevel1Sum + warnlevel2Sum + warnlevel3Sum + warnlevel4Sum
+                    $("#sum").html("合计一共" + sum + "次")
                     $("#tbodyHtml").html(tbodyHtml);
+                    $("#phoneHtml").html(phoneHtml);
+                },
+                TimePlugIn: function () {
+                    new Mdate("dateSelectorOne");
                 }
             };
             StatisticalTable.init();
+            var StatisticalTablePhone = {
+                init: function () {
+                    StatisticalTablePhone.listen()
+                },
+                listen: function () {
+
+                }
+            }
         });
     </script>
+
 </body>
 
 </html>

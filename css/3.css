@@ -95,52 +95,17 @@ section table thead tr:first-of-type td {
 section table thead tr:first-of-type td:first-of-type {
   border-top: solid 0.03333333rem #64BCE7;
 }
-section table thead tr:first-of-type td:first-of-type::after {
-  content: "Serial number";
-  display: block;
-  font-size: 0.15rem;
-  color: #999999;
-  padding-top: 0.04166667rem;
-}
 section table thead tr:first-of-type td:nth-of-type(2) {
   border-top: solid 0.03333333rem #7aaae3;
-}
-section table thead tr:first-of-type td:nth-of-type(2)::after {
-  content: "Classification of collapse causes";
-  display: block;
-  font-size: 0.15rem;
-  color: #999999;
-  padding-top: 0.04166667rem;
 }
 section table thead tr:first-of-type td:nth-of-type(3) {
   border-top: solid 0.03333333rem #55c2b0;
 }
-section table thead tr:first-of-type td:nth-of-type(3)::after {
-  content: "Classification number of collapse causes";
-  display: block;
-  font-size: 0.15rem;
-  color: #999999;
-  padding-top: 0.04166667rem;
-}
 section table thead tr:first-of-type td:nth-of-type(4) {
   border-top: solid 0.03333333rem #eebf75;
 }
-section table thead tr:first-of-type td:nth-of-type(4)::after {
-  content: "Number of disaster points";
-  display: block;
-  font-size: 0.15rem;
-  color: #999999;
-  padding-top: 0.04166667rem;
-}
 section table thead tr:first-of-type td:nth-of-type(5) {
   border-top: solid 0.03333333rem #e47f7f;
-}
-section table thead tr:first-of-type td:nth-of-type(5)::after {
-  content: "Occupation ratio";
-  display: block;
-  font-size: 0.15rem;
-  color: #999999;
-  padding-top: 0.04166667rem;
 }
 section table thead tr:nth-of-type(2) {
   height: 0.49166667rem;
