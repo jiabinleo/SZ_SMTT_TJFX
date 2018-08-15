@@ -16,11 +16,11 @@
     <div class="pc">
         <header>
             <h1></h1>
-            <h2 id="title">2018年灾险情统计表</h2>
+            <h2>灾险情统计表</h2>
         </header>
         <section>
             <menu>
-                <h3>灾险情统计表</h3>
+                <h3 id="titlePc">灾险情统计表</h3>
                 <select id="particularYear" data-edit-select="1">
                 </select>
                 <select name="" id="quarter">
@@ -66,7 +66,7 @@
         <header>
             灾险情统计表
             <i id=""></i>
-            <input type="text" id="dateSelectorOne" placeholder="选择日期">
+            <input type="button" id="dateSelectorOne" placeholder="选择日期">
         </header>
         <section>
             <h2 id="titlePhone">灾险情统计表</h2>
@@ -137,6 +137,37 @@
                 },
                 listen: function () {
                     // $("#dateSure").on("click", function () {
+                    //pc
+                    $("#search").on("click",function(){
+                        particularYear = $("#particularYear option:selected").val();
+                        quarter_dataId = $("#quarter option:selected").attr("data-id");
+                        StatisticalTable.queryData(particularYear, quarter_dataId);
+                        var quarter = ""
+                        switch (quarter_dataId) {
+                            case "1":
+                                quarter = "第一季度"
+                                break;
+                            case "2":
+                                quarter = "第二季度"
+                                break;
+                            case "3":
+                                quarter = "第三季度"
+                                break;
+                            case "4":
+                                quarter = "第四季度"
+                                break;
+                            case "0":
+                                quarter = "全年"
+                                break;
+                            default:
+                                break;
+                        }
+                        console.log(quarter_dataId)
+                        setTimeout(() => {
+                            $("#titlePc").html(particularYear + "年" + quarter + "灾险情统计表");
+                        }, 0);
+                    })
+                    //移动端
                     $(document).on("click", "#dateSure", function () {
                         particularYear = $("#dateSelectorOne").attr("data-year");
                         quarter_dataId = $("#dateSelectorOne").attr("data-month");
