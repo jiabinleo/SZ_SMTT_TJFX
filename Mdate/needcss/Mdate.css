@@ -60,7 +60,8 @@ html, body{padding: 0; margin: 0; border: 0; vertical-align: baseline; font-size
 }
 
 .getDateBox .choiceDateTitle{
-    height: 2.933rem;
+    /* height: 2.933rem; */
+    height: 1.58rem;
     background-color: #f2f2f2;
 }
 .getDateBox .choiceDateTitle button{

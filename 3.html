@@ -6,18 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="Mdate/Mdate.js"></script>
+    <script src="Mdate/iScroll.js"></script>
     <link rel="stylesheet" href="./css/3.css">
     <title>深圳市地面坍塌灾害治理情况统计</title>
 </head>
 
 <body>
-    <header>
-        <h1></h1>
-        <h2 id="title">深圳市地面坍塌灾害治理情况统计(2018年)</h2>
-    </header>
-    <section>
+    <div class="pc">
+        <header>
+            <h1></h1>
+            <h2>深圳市地面坍塌灾害治理情况统计</h2>
+        </header>
+        <section>
             <menu>
-                <h3>深圳市地面坍塌灾害治理情况统计</h3>
+                <h3 id="titlePc">深圳市地面坍塌灾害治理情况统计</h3>
                 <select id="particularYear" data-edit-select="1">
                 </select>
                 <select name="" id="quarter">
@@ -32,25 +35,46 @@
             <table border="1" cellspacing="0" width="100%">
                 <thead>
                     <tr>
-                            <td>序号</td>
-                            <td>坍塌原因分类</td>
-                            <td>坍塌原因分类编号</td>
-                            <td>发灾点数量（处）</td>
-                            <td>占比（%）</td>
+                        <td>序号</td>
+                        <td>坍塌原因分类</td>
+                        <td>坍塌原因分类编号</td>
+                        <td>发灾点数量（处）</td>
+                        <td>占比（%）</td>
                     </tr>
                 </thead>
-                <tbody id="tbodyHtml">
-                        <tr>
-                                <td>&nbsp;</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                <tbody id="tbodyHtmlPc">
                 </tbody>
             </table>
+            <p class="sum">合计0个发灾点</p>
             <p id="timer">截至3月31日</p>
         </section>
+    </div>
+    <div class="phone">
+        <header>
+            深圳市地面坍塌灾害治理情况统计
+            <i id=""></i>
+            <input type="button" id="dateSelectorOne" placeholder="选择日期">
+        </header>
+        <section>
+            <h2 id="titlePhone">深圳市地面坍塌灾害治理情况统计</h2>
+            <table border="1" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <td>原因</td>
+                        <td>编号</td>
+                        <td>数量（处）</td>
+                        <td>占比（%）</td>
+                    </tr>
+                </thead>
+                <tbody id="tbodyHtmlPhone">
+                </tbody>
+            </table>
+            <p class="sum">合计0个发灾点</p>
+            <p id="timerphone" class="timerphone">截至3月31日</p>
+        </section>
+        <footer>
+        </footer>
+    </div>
     <script>
         (function () {
             var width = document.documentElement.clientWidth;
@@ -60,73 +84,173 @@
         })();
         $(function () {
             var localhost = "http://14.116.184.77:8098";
-            queryData()
-            $("#search").on("click", function () {
-                var particularYear = $("#particularYear option:selected").val();
-                var quarter_dataId = $("#quarter option:selected").attr("data-id");
-                var quarter = $("#quarter option:selected").val();
-                queryData(particularYear, quarter_dataId)
-                $("#title").html("深圳市地面坍塌灾害治理情况统计(" + particularYear + "年" + quarter + ")")
-
-            })
-            var particularYearHtml = "";
-            var year = (new Date()).getFullYear()
-            var years = new Date()
-            $("#timer").html("截止" + years.getFullYear() + "年" + (years.getMonth() + 1) + "月" + years.getDate() + "日")
-            for (let i = year; i >= year - 10; i--) {
-                particularYearHtml += "<option value=" + i + ">" + i + "年</option>"
-            }
-            $("#particularYear").html(particularYearHtml)
-            function queryData(particularYear, quarter) {
-                $.ajax({
-                    url: localhost + "/dfbinterface/mobile/gisshow/GetGisCountData4",
-                    type: "POST",
-                    dataType: "jsonp",
-                    jsonp: "callback",
-                    data: {
-                        year: particularYear,
-                        quarter: quarter
-                    },
-                    success: function (data) {
-                        if (data.success === "0") {
-                            var arr = []
-                            for (const key in data.result[0]) {
-                                if (data.result[0].hasOwnProperty(key)) {
-                                    arr.push(data.result[0][key])
-                                }
-                            }
-                            queryDate(arr)
-                        }
-                    },
-                    error: function (err) {
+            var particularYear = "",
+                quarter_dataId = "",
+                quarter = ""; //年份数字    季度数字   第X季度
+            var StatisticalTable = {
+                init: function () {
+                    var year = (new Date()).getFullYear();
+                    var particularYearHtml = "";
+                    var years = new Date()
+                    $("#timer").html(
+                        "截止" +
+                        years.getFullYear() +
+                        "年" + (years.getMonth() + 1) +
+                        "月" + years.getDate() +
+                        "日")
+                    $("#timerphone").html(
+                        "截止" +
+                        years.getFullYear() +
+                        "年" +
+                        (years.getMonth() + 1) +
+                        "月" +
+                        years.getDate() +
+                        "日"
+                    );
+                    StatisticalTable.queryData(particularYear, quarter_dataId);
+                    for (let i = year; i >= year - 10; i--) {
+                        particularYearHtml += "<option value=" + i + ">" + i + "年</option>"
                     }
-                });
-            }
-            function queryDate(data) {
-                var tbodyHtml = "",
-                    datacountSum = 0;
-                // percentSum = 0;
-                for (let i = 0; i < data.length; i++) {
-                    datacountSum += data[i].datacount
-                    // percentSum += parseFloat(data[i].percent)
-                    tbodyHtml +=
+                    $("#particularYear").html(particularYearHtml)
+
+                    StatisticalTable.listen()
+                    StatisticalTable.TimePlugIn()
+
+                },
+                listen: function () {
+                    //pc
+                    $("#search").on("click", function () {
+                        var particularYear = $("#particularYear option:selected").val();
+                        var quarter_dataId = $("#quarter option:selected").attr("data-id");
+                        var quarter = $("#quarter option:selected").val();
+                        StatisticalTable.queryData(particularYear, quarter_dataId)
+                        var quarter = ""
+                        switch (quarter_dataId) {
+                            case "1":
+                                quarter = "第一季度"
+                                break;
+                            case "2":
+                                quarter = "第二季度"
+                                break;
+                            case "3":
+                                quarter = "第三季度"
+                                break;
+                            case "4":
+                                quarter = "第四季度"
+                                break;
+                            case "0":
+                                quarter = "全年"
+                                break;
+                            default:
+                                break;
+                        }
+                        setTimeout(() => {
+                            $("#titlePc").html(particularYear + "年" + quarter + "灾害治理情况统计");
+                        }, 0);
+                    })
+                    //移动端
+
+                    $(document).on("click", "#dateSure", function () {
+                        particularYear = $("#dateSelectorOne").attr("data-year");
+                        quarter_dataId = $("#dateSelectorOne").attr("data-month");
+                        StatisticalTable.queryData(particularYear, quarter_dataId);
+                        var quarter = ""
+                        switch (quarter_dataId) {
+                            case "1":
+                                quarter = "第一季度"
+                                break;
+                            case "2":
+                                quarter = "第二季度"
+                                break;
+                            case "3":
+                                quarter = "第三季度"
+                                break;
+                            case "4":
+                                quarter = "第四季度"
+                                break;
+
+                            default:
+                                break;
+                        }
+                        setTimeout(() => {
+                            $("#titlePhone").html(particularYear + "年" + quarter + "灾害治理情况统计");
+                        }, 0);
+                    })
+                },
+                queryData: function (particularYear, quarter) {
+                    $.ajax({
+                        url: localhost + "/dfbinterface/mobile/gisshow/GetGisCountData4",
+                        type: "POST",
+                        dataType: "jsonp",
+                        jsonp: "callback",
+                        data: {
+                            year: particularYear,
+                            quarter: quarter
+                        },
+                        success: function (data) {
+                            if (data.success === "0") {
+                                var arr = []
+                                for (const key in data.result[0]) {
+                                    if (data.result[0].hasOwnProperty(key)) {
+                                        arr.push(data.result[0][key])
+                                    }
+                                }
+                                StatisticalTable.queryDate(arr)
+                            }
+                        },
+                        error: function (err) {
+                        }
+                    });
+                },
+                queryDate: function (data) {
+                    var tbodyHtmlPc = "",
+                        tbodyHtmlPhone = "",
+                        datacountSum = 0;
+                    // percentSum = 0;
+                    for (let i = 0; i < data.length; i++) {
+                        datacountSum += data[i].datacount
+                        // percentSum += parseFloat(data[i].percent)
+                        tbodyHtmlPc +=
+                            "<tr>" +
+                            "<td>" + (i + 1) + "</td>" +
+                            "<td>" + data[i].dataname + "</td>" +
+                            "<td>" + data[i].datavalue + "</td>" +
+                            "<td>" + data[i].datacount + "</td>" +
+                            "<td>" + data[i].percent + "</td>" +
+                            "</tr>"
+                        tbodyHtmlPhone +=
+                            "<tr>" +
+                            "<td>" + data[i].dataname + "</td>" +
+                            "<td>" + data[i].datavalue + "</td>" +
+                            "<td>" + data[i].datacount + "</td>" +
+                            "<td>" + data[i].percent + "</td>" +
+                            "</tr>"
+                    }
+                    tbodyHtmlPc +=
                         "<tr>" +
-                        "<td>" + (i + 1) + "</td>" +
-                        "<td>" + data[i].dataname + "</td>" +
-                        "<td>" + data[i].datavalue + "</td>" +
-                        "<td>" + data[i].datacount + "</td>" +
-                        "<td>" + data[i].percent + "</td>" +
+                        "<td colspan='2'>总计</td>" +
+                        "<td></td>" +
+                        "<td>" + datacountSum + "</td>" +
+                        "<td>100%</td>" +
                         "</tr>"
+                    tbodyHtmlPhone +=
+                        "<tr>" +
+                        "<td colspan='1'>总计</td>" +
+                        "<td></td>" +
+                        "<td>" + datacountSum + "</td>" +
+                        "<td>100%</td>" +
+                        "</tr>";
+                    var sum = datacountSum;
+                    $(".sum").html("合计" + sum + "个发灾点")
+                    $("#tbodyHtmlPc").html(tbodyHtmlPc)
+                    $("#tbodyHtmlPhone").html(tbodyHtmlPhone)
+                },
+                TimePlugIn: function () {
+                    new Mdate("dateSelectorOne");
                 }
-                tbodyHtml +=
-                    "<tr>" +
-                    "<td colspan='2'>总计</td>" +
-                    "<td></td>" +
-                    "<td>" + datacountSum + "</td>" +
-                    "<td>100%</td>" +
-                    "</tr>"
-                $("#tbodyHtml").html(tbodyHtml)
+
             }
+            StatisticalTable.init();
         })
     </script>
 </body>
